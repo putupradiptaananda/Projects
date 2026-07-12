@@ -10,6 +10,8 @@ enum PokeStat{
     Hp, Atk, Def, Spatk, Spdef, Spe, Statcount//(there are 6 type of base stats)
 };
 
+const char *statnames[Statcount] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"};
+
 enum nature{
             // -stats ->
 /*+stats*/  Hardy, Lonely, Adamant, Naughty, Brave, 
@@ -43,10 +45,10 @@ typedef struct
     int nature_index; // index into available nature table
 }Pokemon;
 
-
-
-int find_nature_multipliers(string name);
-int StatCalc(int base, int iv, int ev, int lvl, int isHP, float natureMult);
+int __find_nature_multipliers(string name);
+int _stat_calc(int base, int iv, int ev, int lvl, int isHP, float natureMult);
+void __indv_stat_input(const string &title, int stat_arr[]);
+void _stat_input (string calc_mode, Pokemon &A);
 void stat_calculator_mode(int gen);
 void find_iv_mode(int gen);
 
@@ -55,10 +57,7 @@ void find_iv_mode(int gen);
 
 
 
-
-
-
-int find_nature_multiplier(string name){
+int __find_nature_multiplier(string name){
     for (char &c : name) c = tolower(c);
 
     if (nature_index_list.count(name)) {
@@ -66,8 +65,7 @@ int find_nature_multiplier(string name){
     } else return -1;
 }
 
-// Stat calculation for HP and other stats, with optional nature multiplier
-int StatCalc(int base, int iv, int ev, int lvl, int isHP, float natureMult) {
+int _stat_calc(int base, int iv, int ev, int lvl, int isHP, float natureMult) {
     int stat;
     if (isHP) {
         stat = ((((2*base)+iv+(ev/4))*lvl)/100)+lvl+10;
@@ -77,61 +75,64 @@ int StatCalc(int base, int iv, int ev, int lvl, int isHP, float natureMult) {
     return stat;
 }
 
+void __indv_stat_input(const string &title, int stat_arr[]){
+    
+    cout<<"<--"<<title<<"-->"<<endl;
+    for (int i = 0; i < Statcount; i++)
+    {
+        printf("%s: ", statnames[i]);
+        scanf("%d", &stat_arr[i]);
+    }
+}
+
+void _stat_input (string calc_mode, Pokemon &A){ //apparently, c++ has a feature where you dont need to use * and & for pass-by-reference. You just type & once and its done. no -> and stuff
+    int i;
+
+    cout<<"\n[======Input Pokemon Stat======]\n";
+    //Base Stats
+    __indv_stat_input("Base Stats",A.BS);
+    //IV's
+    if (calc_mode=="stat") __indv_stat_input("IV's", A.IV);
+    //EV's
+    __indv_stat_input("EV's", A.EV);
+    //level
+    printf("Level: ");
+    scanf("%d", &A.lvl);
+
+    //nature
+    printf("Nature: ");
+    string nature_input;
+    cin>>nature_input;
+    A.nature_index = __find_nature_multiplier(nature_input);
+    if(A.nature_index == -1){
+        cout<<"Nature not found";
+        return;
+    }
+
+    //FinalStat
+    if (calc_mode == "iv") __indv_stat_input("Final Stat", A.finalStat);
+}
+
 void find_iv_mode(int gen){
     if (gen < 3) {
         cout<<"Not implemented yet\n";
         return;
     }
-    const char *statnames[Statcount] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"};
+    cout<<"#######[POKEMON IV CALCULATOR]#######\n";
     Pokemon A;
     int i; 
-    //Base Stats
-    printf("Base Stats\n");
-    for (i = 0; i < Statcount; i++)
-    {
-        printf("%s: ", statnames[i]);
-        scanf("%d", &A.BS[i]);
-    }
     
-    //EV's
-    printf("EV's\n");
-    for (i = 0; i < Statcount; i++)
-    {
-        printf("%s: ", statnames[i]);
-        scanf("%d", &A.EV[i]);
-    }
-    
-    //level
-    printf("Level: ");
-    scanf("%d", &A.lvl);
-    
-    //nature
-    printf("Nature name: ");
-    string nature_input;
-    cin>>nature_input;
-    A.nature_index = find_nature_multiplier(nature_input);
-    if(A.nature_index == -1){
-        cout<<"Nature not found";
-        return;
-    }
-    
-    //FinalStat
-    printf("Final Stats\n");
-    for (i = 0; i < Statcount; i++)
-    {
-        printf("%s: ", statnames[i]);
-        scanf("%d", &A.finalStat[i]);
-    }
+    _stat_input("iv", A);
 
-    cout<<"\nIV Range\n";
+    cout<<"\n[======IV Range======]\n";
     for (i = 0; i < Statcount; i++){
         printf("%s: ", statnames[i]);
         for (int j = 0; j <=31; j++){
             if(i==0){
-                if (A.finalStat[i] == StatCalc(A.BS[i], j, A.EV[i], A.lvl, 1, A.nature_index)) 
+                if (A.finalStat[i] == _stat_calc(A.BS[i], j, A.EV[i], A.lvl, 1, A.nature_index)) 
                     printf("%d ",  j);
             } else {
-                if (A.finalStat[i] == StatCalc(A.BS[i], j, A.EV[i], A.lvl, 0, nature_multipliers[A.nature_index][i-1])) 
+                if (A.finalStat[i] == _stat_calc(A.BS[i], j, A.EV[i], A.lvl, 0, nature_multipliers[A.nature_index][i-1])) 
                     printf("%d ",  j);
             }
         }
@@ -146,60 +147,23 @@ void stat_calculator_mode(int gen){
         cout<<"Not implemented yet\n";
         return;
     }
-    const char *statnames[Statcount] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"};
+    cout<<"#######[POKEMON STAT CALCULATOR]######\n";
     Pokemon A;
-    int lvl;
     int i; 
-    //Base Stats
-    printf("Base Stats\n");
-    for (i = 0; i < Statcount; i++)
-    {
-        printf("%s: ", statnames[i]);
-        scanf("%d", &A.BS[i]);
-    }
 
-    //IV's
-    printf("IV's\n");
-    for (i = 0; i < Statcount; i++)
-    {
-        printf("%s: ", statnames[i]);
-        scanf("%d", &A.IV[i]);
-    }
-
-    //EV's
-    printf("EV's\n");
-    for (i = 0; i < Statcount; i++)
-    {
-        printf("%s: ", statnames[i]);
-        scanf("%d", &A.EV[i]);
-    }
-
-    printf("Level: ");
-    scanf("%d", &A.lvl);
-
-    printf("Nature name: ");
-    string nature_input;
-    cin>>nature_input;
-    A.nature_index = find_nature_multiplier(nature_input);
-    if(A.nature_index == -1){
-        cout<<"Nature not found";
-        return;
-    }
+    _stat_input("stat", A);
 
     //StatCalcs
+    cout<<"\n[======Final Stats======]\n";
     for (i = 0; i < Statcount; i++)
     {
         if (i == Hp)
-            A.finalStat[i] = StatCalc(A.BS[i], A.IV[i], A.EV[i], A.lvl, 1, 1);
-        else
-            A.finalStat[i] = StatCalc(A.BS[i], A.IV[i], A.EV[i], A.lvl, 0, nature_multipliers[A.nature_index][i-1]); //here is the hp enumeration solution
-    }
+            A.finalStat[i] = _stat_calc(A.BS[i], A.IV[i], A.EV[i], A.lvl, 1, 1);
 
-    //print stats
-    for (i = 0; i < Statcount; i++)
-    {
-        printf("%s: ", statnames[i]);
-        printf("%d\n", A.finalStat[i]);
+        else
+            A.finalStat[i] = _stat_calc(A.BS[i], A.IV[i], A.EV[i], A.lvl, 0, nature_multipliers[A.nature_index][i-1]); //here is the hp enumeration solution
+
+        printf("%s: %d\n", statnames[i], A.finalStat[i]);
     }
 }
 
@@ -207,7 +171,6 @@ void stat_calculator_mode(int gen){
 
 int main (int argc, char *argv[]) 
 {
-    cout<<"hai\n";
     string calc_mode;
     int generation;
     if (argc == 3) {
