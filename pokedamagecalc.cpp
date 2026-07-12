@@ -44,6 +44,20 @@ typedef struct
 }Pokemon;
 
 
+
+int find_nature_multipliers(string name);
+int StatCalc(int base, int iv, int ev, int lvl, int isHP, float natureMult);
+void stat_calculator_mode(int gen);
+void find_iv_mode(int gen);
+
+
+
+
+
+
+
+
+
 int find_nature_multiplier(string name){
     for (char &c : name) c = tolower(c);
 
@@ -63,7 +77,75 @@ int StatCalc(int base, int iv, int ev, int lvl, int isHP, float natureMult) {
     return stat;
 }
 
-void stat_calculator(int gen){
+void find_iv_mode(int gen){
+    if (gen < 3) {
+        cout<<"Not implemented yet\n";
+        return;
+    }
+    const char *statnames[Statcount] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"};
+    Pokemon A;
+    int i; 
+    //Base Stats
+    printf("Base Stats\n");
+    for (i = 0; i < Statcount; i++)
+    {
+        printf("%s: ", statnames[i]);
+        scanf("%d", &A.BS[i]);
+    }
+    
+    //EV's
+    printf("EV's\n");
+    for (i = 0; i < Statcount; i++)
+    {
+        printf("%s: ", statnames[i]);
+        scanf("%d", &A.EV[i]);
+    }
+    
+    //level
+    printf("Level: ");
+    scanf("%d", &A.lvl);
+    
+    //nature
+    printf("Nature name: ");
+    string nature_input;
+    cin>>nature_input;
+    A.nature_index = find_nature_multiplier(nature_input);
+    if(A.nature_index == -1){
+        cout<<"Nature not found";
+        return;
+    }
+    
+    //FinalStat
+    printf("Final Stats\n");
+    for (i = 0; i < Statcount; i++)
+    {
+        printf("%s: ", statnames[i]);
+        scanf("%d", &A.finalStat[i]);
+    }
+
+    cout<<"\nIV Range\n";
+    for (i = 0; i < Statcount; i++){
+        printf("%s: ", statnames[i]);
+        for (int j = 0; j <=31; j++){
+            if(i==0){
+                if (A.finalStat[i] == StatCalc(A.BS[i], j, A.EV[i], A.lvl, 1, A.nature_index)) 
+                    printf("%d ",  j);
+            } else {
+                if (A.finalStat[i] == StatCalc(A.BS[i], j, A.EV[i], A.lvl, 0, nature_multipliers[A.nature_index][i-1])) 
+                    printf("%d ",  j);
+            }
+        }
+        cout<<endl;
+
+    }
+    return;
+}
+
+void stat_calculator_mode(int gen){
+    if (gen < 3) {
+        cout<<"Not implemented yet\n";
+        return;
+    }
     const char *statnames[Statcount] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"};
     Pokemon A;
     int lvl;
@@ -121,6 +203,8 @@ void stat_calculator(int gen){
     }
 }
 
+
+
 int main (int argc, char *argv[]) 
 {
     cout<<"hai\n";
@@ -137,8 +221,9 @@ int main (int argc, char *argv[])
         return 1;
     }
 
-    if (calc_mode == "stat") {
-        stat_calculator(generation);
-    }
+    //mode selection
+    if (calc_mode == "stat") stat_calculator_mode(generation);
+    else if(calc_mode == "iv") find_iv_mode(generation);
+
     return 0;
 }
