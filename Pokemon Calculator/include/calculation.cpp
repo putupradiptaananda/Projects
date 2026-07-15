@@ -1,25 +1,10 @@
-#include <stdio.h>
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include "calculation.h"
 using namespace std;
 
-
-
-enum PokeStat{
-    Hp, Atk, Def, Spatk, Spdef, Spe, Statcount//(there are 6 type of base stats)
-};
-
 const char *statnames[Statcount] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"};
-
-enum nature{
-            // -stats ->
-/*+stats*/  Hardy, Lonely, Adamant, Naughty, Brave, 
-/*  |   */  Bold, Docile, Impish, Lax, Relaxed, 
-/*  v   */  Modest, Mild, Bashful, Rash, Quiet,
-            Calm, Gentle, Careful, Quirky, Sassy, 
-            Timid, Hasty, Jolly, Naive, Serious
-};
 
 float nature_multipliers[25][5] = { //note: i forgot about the hp enumeration so i solved it with i-1 when retrieving nature_multiplier 
             //-atk          -defense         -spatk           -spdef           -spe
@@ -30,18 +15,12 @@ float nature_multipliers[25][5] = { //note: i forgot about the hp enumeration so
 /*+spe  */  {0.9,1,1,1,1.1}, {1,0.9,1,1,1.1}, {1,1,0.9,1,1.1}, {1,1,1,0.9,1.1}, {1,1,1,1,1}
 };
 
-unordered_map<string, int> nature_index_list = {
+unordered_map<std::string, int> nature_index_list = {
     {"hardy", Hardy},   {"lonely", Lonely}, {"adamant", Adamant}, {"naughty", Naughty}, {"brave", Brave},
     {"bold", Bold},     {"docile", Docile}, {"impish", Impish},   {"lax", Lax},         {"relaxed", Relaxed},
     {"modest", Modest}, {"mild", Mild},     {"bashful", Bashful}, {"rash", Rash},       {"quiet", Quiet},
     {"calm", Calm},     {"gentle", Gentle}, {"careful", Careful}, {"quirky", Quirky},   {"sassy", Sassy},
     {"timid", Timid},   {"hasty", Hasty},   {"jolly", Jolly},     {"naive", Naive},     {"serious", Serious}
-};
-
-struct char_data{
-    const char* text;
-    int best_stat;
-    int mod_val;
 };
 
 const char_data characteristics[32] = {
@@ -78,25 +57,6 @@ const char_data characteristics[32] = {
     {"Thoroughly cunning", Spatk, 2},
     {"Very finicky", Spatk, 4}
 };
-
-typedef struct
-{
-    int EV[Statcount], IV[Statcount], BS[Statcount], finalStat[Statcount];
-    int lvl;
-    int nature_index; // index into available nature table
-    int char_index;
-}Pokemon;
-
-int __find_nature_multipliers(string name);
-int _stat_calc(int base, int iv, int ev, int lvl, int isHP, float natureMult);
-bool __indv_stat_input(const string &title, int stat_arr[]);
-void _stat_input (string calc_mode, Pokemon &A);
-void stat_calculator_mode(int gen);
-void find_iv_mode(int gen);
-
-
-
-
 
 
 int __find_nature_multiplier(string name){
@@ -308,37 +268,4 @@ void stat_calculator_mode(int gen){
 
         printf("%s: %d\n", statnames[i], A.finalStat[i]);
     }
-}
-
-
-
-int main (int argc, char *argv[]) 
-{
-    string calc_mode;
-    int generation;
-    if (argc == 3) {
-        calc_mode = argv[1];
-        try{
-            generation = stoi(argv[2]); 
-        }
-        catch(...){
-            cout<<"Generation ain't a number\n";
-            return 1;
-        }
-        
-    } else if (argc > 3){
-        cout<<"Too many arguments\n";
-        return 1;
-    } else if (argc < 3){
-        cout<<"Too little arguments\n";
-        return 1;
-    }
-
-    //mode selection
-    if (calc_mode == "stat") stat_calculator_mode(generation);
-    else if(calc_mode == "iv") find_iv_mode(generation);
-    else cout<<"Uknown mode\n";
-    
-
-    return 0;
 }
