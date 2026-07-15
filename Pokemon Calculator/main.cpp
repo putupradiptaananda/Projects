@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "include\calculation.h"
+#include "include/calculation.h"
 using namespace std;
 
 int main (int argc, char *argv[]) 
