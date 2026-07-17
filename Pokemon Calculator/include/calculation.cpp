@@ -108,7 +108,7 @@ bool __indv_stat_input(const string &title, int stat_arr[]){
     return true;
 }
 
-void _stat_input (string calc_mode, Pokemon &A){ //apparently, c++ has a feature where you dont need to use * and & for pass-by-reference. You just type & once and its done. no -> and stuff
+void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has a feature where you dont need to use * and & for pass-by-reference. You just type & once and its done. no -> and stuff
     int i;
 
     cout<<"\n[======Input Pokemon Stat======]\n";
@@ -123,7 +123,7 @@ void _stat_input (string calc_mode, Pokemon &A){ //apparently, c++ has a feature
             break;
         
         case 2://IV
-            if (calc_mode=="stat"){
+            if (calc_mode == MODE_STAT){
                 if (__indv_stat_input("IV", A.IV)) section++;
                 else section--;
             }
@@ -133,7 +133,7 @@ void _stat_input (string calc_mode, Pokemon &A){ //apparently, c++ has a feature
         case 3: //EV
             if (__indv_stat_input("EV", A.EV)) section++;
             else {
-                if (calc_mode=="stat") section--;
+                if (calc_mode==MODE_STAT) section--;
                 else section-=2;
             }
             break;
@@ -169,14 +169,14 @@ void _stat_input (string calc_mode, Pokemon &A){ //apparently, c++ has a feature
         }
 
         case 6: //Final stat
-            if(calc_mode=="iv"){
+            if(calc_mode== MODE_IV){
                 if (__indv_stat_input("Final Stats", A.finalStat)) section++;
                 else section--;
             } else section++;
             break;
 
         case 7: 
-            if (calc_mode=="iv") {
+            if (calc_mode==MODE_IV) {
                 cout<<"| List of Characteristics |\n";
                 for (int j = 0; j<16; j++){
                     printf("%2d. %-24s %2d. %-24s\n", j+1, characteristics[j].text, j+17, characteristics[j+16].text);
@@ -222,7 +222,7 @@ void find_iv_mode(int gen){
     Pokemon A;
     int i; 
     
-    _stat_input("iv", A);
+    _stat_input(MODE_IV, A);
 
     cout<<"\n[======IV Range======]\n";
     for (i = 0; i < Statcount; i++){
@@ -254,7 +254,7 @@ void stat_calculator_mode(int gen){
     Pokemon A;
     int i; 
 
-    _stat_input("stat", A);
+    _stat_input(MODE_STAT, A);
 
     //StatCalcs
     cout<<"\n[======Final Stats======]\n";

@@ -26,8 +26,8 @@ int main (int argc, char *argv[])
     }
 
     //mode selection
-    if (calc_mode == "stat") stat_calculator_mode(generation);
-    else if(calc_mode == "iv") find_iv_mode(generation);
+    if (calc_mode == "-stat") stat_calculator_mode(generation);
+    else if(calc_mode == "-iv") find_iv_mode(generation);
     else cout<<"Uknown mode\n";
     
 
