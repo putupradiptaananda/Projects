@@ -1,8 +1,12 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <fstream>
+#include <sstream>
 #include "calculation.h"
 using namespace std;
+
+const string DB_FILENAME = "pokemon_base_stats.csv";
 
 const char *statnames[Statcount] = {"HP", "Attack", "Defense", "Special Attack", "Special Defense", "Speed"};
 
@@ -77,6 +81,64 @@ int _stat_calc(int base, int iv, int ev, int lvl, int isHP, float natureMult) {
     return stat;
 }
 
+void __init_db(){
+    ifstream db;
+    db.open(DB_FILENAME);
+    if (db.fail()){
+        cout<<"Database file doesn't exist or is unreadable\nCreating new file\n";
+        ofstream db_create;
+        db_create.open(DB_FILENAME, ofstream::app);
+        db_create << "NatDexNum,Name,Hp,Atk,Def,SpAtk,Spdef,Speed\n";
+        cout<<"File created\n";
+        db_create.close();
+    }
+    db.close();
+}
+
+bool __load_base_stats(int dex_number, string name, Pokemon &A){
+    ifstream db;
+    db.open(DB_FILENAME);
+    string input_line;
+    for (char &c : name) c = tolower(c);
+
+    getline(db, input_line);//skip the header row
+
+    while (getline(db, input_line)){
+        stringstream ss;
+        ss.str(input_line);
+        string token;
+
+        //get dex number
+        getline(ss, token, ',');
+        int input_dex = stoi(token);
+        //get name
+        getline(ss, token, ',');
+        string input_name=token;
+        for (char &c : input_name) c = tolower(c);
+
+        if (input_dex==dex_number && input_name==name){
+            cout<<"Pokemon found in database, retrieving base stats...\n";
+            for (int i = 0; i<Statcount; i++){
+                getline(ss, token, ',');
+                A.BS[i] = stoi(token);
+                printf("%s : %d\n", statnames[i], A.BS[i]);
+            }
+            return true;
+        }
+    }
+    db.close();
+    return false;
+}
+
+void __save_base_stats(int dex_number, string name, Pokemon &A){
+    ofstream db;
+    db.open(DB_FILENAME, ios::app);
+    db << dex_number << "," << name;
+    for (int i = 0; i<Statcount; i++) db<<","<< A.BS[i];
+    db<<endl;
+    db.close();
+}
+
 bool __indv_stat_input(const string &title, int stat_arr[]){
     
     cout<<"<--"<<title<<"-->"<<endl;
@@ -111,15 +173,63 @@ bool __indv_stat_input(const string &title, int stat_arr[]){
 void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has a feature where you dont need to use * and & for pass-by-reference. You just type & once and its done. no -> and stuff
     int i;
 
-    cout<<"\n[======Input Pokemon Stat======]\n";
+    cout<<"\n[======Input Pokemon Data======]\n";
 
-    int section = 1;
-    while (section <= 7){ //7 ={Base stat, IV, EV, level, nature, final stat, characteristic}
-        switch (section)
-        {
+    __init_db();
+    int dex_num_input;
+    string name_input;
+    bool loaded; 
+
+
+    int section = 0;
+    while (section <= 7){ //7 ={Identity, Base stat, IV, EV, level, nature, final stat, characteristic}
+        switch (section){
+        case 0: {
+            cout<<"<--Identification-->\n";
+            //Dex Number
+            cout<<"National Dex Number: ";
+            string input;
+            cin>>input;
+            if(input == "q") {
+                cout<<"\nExiting program\n";
+                exit(0);
+            }
+            else if (input == "b"){
+                cout<<"Yo this the first prompt\n";
+            } else {
+                try{
+                    dex_num_input = stoi(input);
+                }
+                catch(...){
+                    cout<<"Input invalid\n";
+                    continue;
+                }
+                
+            }
+            //Name
+            cout<<"Pokemon Name: ";
+            cin>>name_input;
+
+            if (__load_base_stats(dex_num_input, name_input, A)){
+                loaded = true;
+                section+=2;
+            }
+            else {
+                loaded = false;
+                section++;
+            }
+            break;
+        }
         case 1://Base stat
-            if (__indv_stat_input("Base Stats", A.BS)) section++;
-            else cout<<"Yo this the first input section\n";
+            if (loaded){
+                section--;
+                break;
+            } 
+            if (__indv_stat_input("Base Stats", A.BS)) {
+                __save_base_stats(dex_num_input, name_input, A);
+                section++;
+            }
+            else section--; 
             break;
         
         case 2://IV
@@ -213,11 +323,9 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
     }
 }
 
-void find_iv_mode(int gen){
-    if (gen < 3) {
-        cout<<"Not implemented yet\n";
-        return;
-    }
+void find_iv_mode(){
+    
+    
     cout<<"#######[POKEMON IV CALCULATOR]#######\n";
     Pokemon A;
     int i; 
@@ -245,11 +353,7 @@ void find_iv_mode(int gen){
     return;
 }
 
-void stat_calculator_mode(int gen){
-    if (gen < 3) {
-        cout<<"Not implemented yet\n";
-        return;
-    }
+void stat_calculator_mode(){
     cout<<"#######[POKEMON STAT CALCULATOR]######\n";
     Pokemon A;
     int i; 
