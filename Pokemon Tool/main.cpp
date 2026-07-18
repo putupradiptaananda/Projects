@@ -20,8 +20,9 @@ int main (int argc, char *argv[])
     //mode selection
     if (calc_mode == "-stat") stat_calculator_mode();
     else if(calc_mode == "-iv") find_iv_mode();
+    else if(calc_mode=="-saves") save_mode();
     else cout<<"Uknown mode\n";
-    
+        
 
     return 0;
 }

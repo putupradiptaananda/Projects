@@ -30,6 +30,9 @@ struct char_data{
 
 typedef struct
 {
+    int natdex_num;
+    std::string name;
+    std::string nickname;
     int EV[Statcount], IV[Statcount], BS[Statcount], finalStat[Statcount];
     int lvl;
     int nature_index; // index into available nature table

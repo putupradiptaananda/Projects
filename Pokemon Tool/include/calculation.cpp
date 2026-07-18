@@ -90,11 +90,11 @@ bool __indv_stat_input(const string &title, int stat_arr[]){
 
         string input;
         cin>>input;
-        if(input == "q") {
+        if(input == "q" || input == "Q") {
             cout<<"\nExiting program\n";
             exit(0);
         }
-        else if (input == "b"){
+        else if (input == "b" || input == "B"){
             if (i>0) i--;
             else return false;
         } else {
@@ -118,8 +118,6 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
     cout<<"\n[======Input Pokemon Data======]\n";
 
     __init_db();
-    int dex_num_input;
-    string name_input;
     bool loaded; 
 
 
@@ -132,15 +130,15 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
             cout<<"National Dex Number: ";
             string input;
             cin>>input;
-            if(input == "q") {
+            if(input == "q" || input == "Q") {
                 cout<<"\nExiting program\n";
                 exit(0);
             }
-            else if (input == "b"){
+            else if (input == "b" || input == "B"){
                 cout<<"Yo this the first prompt\n";
             } else {
                 try{
-                    dex_num_input = stoi(input);
+                    A.natdex_num = stoi(input);
                 }
                 catch(...){
                     cout<<"Input invalid\n";
@@ -150,9 +148,9 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
             }
             //Name
             cout<<"Pokemon Name: ";
-            cin>>name_input;
+            cin>>A.name;
 
-            if (__load_base_stats(dex_num_input, name_input, A)){
+            if (__load_base_stats(A)){
                 loaded = true;
                 section+=2;
             }
@@ -168,7 +166,7 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
                 break;
             } 
             if (__indv_stat_input("Base Stats", A.BS)) {
-                __save_base_stats(dex_num_input, name_input, A);
+                __save_base_stats(A);
                 section++;
             }
             else section--; 
@@ -238,7 +236,11 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
                 string char_input;
                 cin>>char_input;
 
-                if (char_input=="b") section--;
+                if (char_input == "q" || char_input == "Q"){
+                    cout<<"\nExiting Program\n";
+                    exit(0);
+                }
+                else if (char_input == "b" || char_input == "B") section--;
                 else {
                     try{
                         int char_num;

@@ -21,11 +21,11 @@ void __init_db(){
     db.close();
 }
 
-bool __load_base_stats(int dex_number, string name, Pokemon &A){
+bool __load_base_stats(Pokemon &A){
     ifstream db;
     db.open(DB_FILENAME);
     string input_line;
-    for (char &c : name) c = tolower(c);
+    for (char &c : A.name) c = tolower(c);
 
     getline(db, input_line);//skip the header row
 
@@ -42,7 +42,7 @@ bool __load_base_stats(int dex_number, string name, Pokemon &A){
         string input_name=token;
         for (char &c : input_name) c = tolower(c);
 
-        if (input_dex==dex_number && input_name==name){
+        if (input_dex==A.natdex_num && input_name==A.name){
             cout<<"Pokemon found in database, retrieving base stats...\n";
             for (int i = 0; i<Statcount; i++){
                 getline(ss, token, ',');
@@ -56,11 +56,15 @@ bool __load_base_stats(int dex_number, string name, Pokemon &A){
     return false;
 }
 
-void __save_base_stats(int dex_number, string name, Pokemon &A){
+void __save_base_stats(Pokemon &A){
     ofstream db;
     db.open(DB_FILENAME, ios::app);
-    db << dex_number << "," << name;
+    db << A.natdex_num << "," << A.name;
     for (int i = 0; i<Statcount; i++) db<<","<< A.BS[i];
     db<<endl;
     db.close();
 }
+
+void _save_pokemon()
+
+void save_mode()
