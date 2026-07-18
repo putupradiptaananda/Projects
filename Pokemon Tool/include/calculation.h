@@ -6,6 +6,8 @@ enum PokeStat{
     Hp, Atk, Def, Spatk, Spdef, Spe, Statcount//(there are 6 type of base stats)
 };
 
+extern const char *statnames[Statcount];
+
 enum nature{
             // -stats ->
 /*+stats*/  Hardy, Lonely, Adamant, Naughty, Brave, 
@@ -34,10 +36,6 @@ typedef struct
     int char_index;
 }Pokemon;
 
-int __find_nature_multiplier(std::string name);
-int _stat_calc(int base, int iv, int ev, int lvl, int isHP, float natureMult);
-bool __indv_stat_input(const std::string &title, int stat_arr[]);
-void _stat_input (calculator_mode calc_mode, Pokemon &A);
 void stat_calculator_mode();
 void find_iv_mode();
 
