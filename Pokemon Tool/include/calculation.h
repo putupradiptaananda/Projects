@@ -33,11 +33,15 @@ typedef struct
     int natdex_num;
     std::string name;
     std::string nickname;
+    std::string nature;
+    std::string iv_range[Statcount];//to contain a range of numbers in one index that are easily stored in a single column in a .csv file
     int EV[Statcount], IV[Statcount], BS[Statcount], finalStat[Statcount];
     int lvl;
     int nature_index; // index into available nature table
     int char_index;
 }Pokemon;
+
+extern const char_data characteristics[32];
 
 void stat_calculator_mode();
 void find_iv_mode();

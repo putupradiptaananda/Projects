@@ -136,6 +136,7 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
             }
             else if (input == "b" || input == "B"){
                 cout<<"Yo this the first prompt\n";
+                continue;
             } else {
                 try{
                     A.natdex_num = stoi(input);
@@ -214,7 +215,11 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
             if(A.nature_index == -1){
                 cout<<"Nature not found";
                 section--;
-            } else section++;
+            } else {
+                for (char &c : nature_input) c = tolower(c);
+                A.nature=nature_input;
+                section++;
+            }
             break;
         }
 
@@ -267,33 +272,48 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
     }
 }
 
+void _save_prompt(Pokemon& A){
+    cout<<"Save Pokemon? (y/n): ";
+    string answer;
+    cin>>answer;
+    if(answer=="y" || answer == "Y"){
+        cout<<"Enter Nickname: ";
+        cin>>A.nickname;
+        __save_pokemon(A);
+    }
+}
+
 void find_iv_mode(){
     
     
     cout<<"#######[POKEMON IV CALCULATOR]#######\n";
     Pokemon A;
     int i; 
-    
     _stat_input(MODE_IV, A);
-
+    
     cout<<"\n[======IV Range======]\n";
     for (i = 0; i < Statcount; i++){
+        A.iv_range[i]="";
         printf("%s: ", statnames[i]);
         for (int j = 0; j <=31; j++){
             if (i == characteristics[A.char_index].best_stat){
                 if (j%5 != characteristics[A.char_index].mod_val) continue;
             }
             if(i==0){
-                if (A.finalStat[i] == _stat_calc(A.BS[i], j, A.EV[i], A.lvl, 1, 1)) 
+                if (A.finalStat[i] == _stat_calc(A.BS[i], j, A.EV[i], A.lvl, 1, 1)){
                     printf("%d ",  j);
+                    A.iv_range[i]+= to_string(j) + " ";
+                } 
             } else {
-                if (A.finalStat[i] == _stat_calc(A.BS[i], j, A.EV[i], A.lvl, 0, nature_multipliers[A.nature_index][i-1])) 
+                if (A.finalStat[i] == _stat_calc(A.BS[i], j, A.EV[i], A.lvl, 0, nature_multipliers[A.nature_index][i-1])) {
                     printf("%d ",  j);
+                    A.iv_range[i]+= to_string(j) + " ";
+                }
             }
         }
         cout<<endl;
-
     }
+    _save_prompt(A);
     return;
 }
 
@@ -316,4 +336,9 @@ void stat_calculator_mode(){
 
         printf("%s: %d\n", statnames[i], A.finalStat[i]);
     }
+
+    ///save pokemon
+    for (i=0;i<Statcount;i++) A.iv_range[i] = to_string(A.IV[i]);
+    A.char_index = -1;//means no characteristic
+    _save_prompt(A);
 }
