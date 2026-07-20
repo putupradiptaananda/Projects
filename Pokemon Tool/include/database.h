@@ -20,7 +20,7 @@ struct DisplayOption{
     bool show_final=false; //-f
     bool show_nature=false; //-n
     bool show_char=false; //-c
-    bool show_lvl=false; // -l
+    bool show_lvl=false; // -l this is actually not used lol
     std::string species = ""; //-species <pokemon>
 
     SortTypes sort_meth=SORT_NONE;
