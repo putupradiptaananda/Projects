@@ -12,7 +12,7 @@ const string DB_FILENAME = "pokemon_base_stats.csv";
 const string PERSONAL_DB = "saved_pokemon.csv";
 
 int sstoi(string stat){ //Stat string to index
-    int stat_index;
+    int stat_index=-1;
     for (char &c : stat) c = tolower(c);
     
     if (stat=="hp") stat_index=Hp;
@@ -237,5 +237,39 @@ void saves_mode(DisplayOption opts){
         cout<<"\n";
     }
     cout<<"Total pokemon shown: "<<saved_pokemon.size()<<"\n";
+}
 
+void delete_mode(string nickname){
+    ifstream p_db;
+    p_db.open(PERSONAL_DB);
+    if (p_db.fail()){
+        cout<<"Save file doesn't exist\n";
+        return;
+    }
+
+    ofstream p_db_temp;
+    p_db_temp.open("temp.csv", ofstream::app);
+    string line;
+    bool found = false;
+
+    getline(p_db, line);//grab header
+    p_db_temp<<line<<"\n";
+
+    while(getline(p_db, line)){
+        stringstream ss;
+        ss.str(line);
+        string input_nick;
+        getline(ss, input_nick, ',');
+        if (nickname == input_nick) found = true;
+        else p_db_temp << line <<endl;
+    }
+
+
+    p_db.close();
+    p_db_temp.close();
+    remove(PERSONAL_DB.c_str());
+    rename("temp.csv", PERSONAL_DB.c_str());
+
+    if(found) cout<<nickname<<" deleted\n";
+    else cout<<nickname<<" not found\n";
 }

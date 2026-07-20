@@ -33,5 +33,6 @@ bool __load_base_stats(Pokemon &A);
 void __save_base_stats(Pokemon &A);
 void __save_pokemon(Pokemon &A);
 void saves_mode(DisplayOption opts);
+void delete_mode(std::string nickname);
 
 #endif

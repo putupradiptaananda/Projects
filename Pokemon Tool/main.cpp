@@ -52,6 +52,14 @@ int main (int argc, char *argv[])
         }
         saves_mode(opts);
     }
+    else if(calc_mode=="-delete"){
+        if (argc == 3){
+            string arg = argv[2];
+            delete_mode(arg);
+        }
+        else if (argc > 3) cout<<"Too many arguments\n";
+        else cout<<"Too little arguments\n";
+    }
     else cout<<"Uknown mode\n";
         
 
