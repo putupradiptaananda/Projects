@@ -61,12 +61,26 @@ bool __load_base_stats(Pokemon &A){
         for (char &c : input_name) c = tolower(c);
 
         if (input_dex==A.natdex_num && input_name==A.name){
-            cout<<"Pokemon found in database, retrieving base stats...\n";
-            for (int i = 0; i<Statcount; i++){
-                getline(ss, token, ',');
-                A.BS[i] = stoi(token);
-                printf("%s : %d\n", statnames[i], A.BS[i]);
+            bool flag=true;
+            while(flag){
+                cout<<"Pokemon found in database\nLoad base stats? (y/n): ";
+                char yes;
+                cin>>yes;
+                if (yes == 'y'||yes=='Y'){
+                    flag=false;
+                    for (int i = 0; i<Statcount; i++){
+                        getline(ss, token, ',');
+                        A.BS[i] = stoi(token);
+                        printf("%s : %d\n", statnames[i], A.BS[i]);
+                    }
+                }
+                else if (yes == 'n'|| yes == 'N') {
+                    db.close();
+                    return false;
+                }
+                else cout<<"Invalid Input\n";
             }
+            db.close();
             return true;
         }
     }
