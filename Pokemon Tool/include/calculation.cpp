@@ -167,7 +167,18 @@ void _stat_input (calculator_mode calc_mode, Pokemon &A){ //apparently, c++ has 
                 break;
             } 
             if (__indv_stat_input("Base Stats", A.BS)) {
-                __save_base_stats(A);
+                while (true){
+                    cout<<"Save base stats? (y/n): ";
+                    char yes;
+                    cin>>yes;
+
+                    if (yes=='y'||yes=='Y'){
+                        __save_base_stats(A);
+                        break;
+                    } else if (yes=='n'||yes=='N'){
+                        break;
+                    } else cout<<"Invalid input.\n";
+                }
                 section++;
             }
             else section--; 
